@@ -60,17 +60,10 @@ app.whenReady().then(() => {
 
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
-
-  ipcMain.handle('window:enter-main', (event) => {
-    const win = BrowserWindow.fromWebContents(event.sender)
-    if (!win) return
-    win.setResizable(true)
-    win.setMinimumSize(400, 300)
-    win.setMaximumSize(0, 0)
-    win.setSize(MAIN_WINDOW.width, MAIN_WINDOW.height)
-    win.center()
-  })
+  
   loginModule()
+
+
   createWindow()
 
   app.on('activate', function () {

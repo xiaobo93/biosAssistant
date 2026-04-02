@@ -12,17 +12,14 @@ function App(): React.JSX.Element {
     document.body.classList.add(isAuthenticated ? 'main-mode' : 'login-mode')
   }, [isAuthenticated])
 
-  const handleLoginSuccess = async (): Promise<void> => {
-    await window.electron.ipcRenderer.invoke('window:enter-main')
-    setIsAuthenticated(true)
+  const handleLoginSuccess = (LoginState:boolean): void => {
+    setIsAuthenticated(LoginState)
+    return 
   }
 
   if (!isAuthenticated) {
     return <Login onLoginSuccess={handleLoginSuccess} />
   }
-  console.log(window)
-  console.log(window.electron)
-  console.log(window.login)
   return (
     <>
       <img alt="logo" className="logo" src={electronLogo} />

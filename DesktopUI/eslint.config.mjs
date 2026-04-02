@@ -25,7 +25,10 @@ export default defineConfig(
     },
     rules: {
       ...eslintPluginReactHooks.configs.recommended.rules,
-      ...eslintPluginReactRefresh.configs.vite.rules
+      ...eslintPluginReactRefresh.configs.vite.rules,
+      
+      // Disable indent rule to avoid conflicts with Prettier xiaobo 2026-04-02
+      "@typescript-eslint/indent":"off"
     }
   },
   eslintConfigPrettier
