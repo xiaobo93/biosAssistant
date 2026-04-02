@@ -1,9 +1,28 @@
+import { useEffect, useState } from 'react'
 import Versions from './components/Versions'
+import Login from './components/Login'
 import electronLogo from './assets/electron.svg'
 
 function App(): React.JSX.Element {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
 
+  useEffect(() => {
+    document.body.classList.remove('login-mode', 'main-mode')
+    document.body.classList.add(isAuthenticated ? 'main-mode' : 'login-mode')
+  }, [isAuthenticated])
+
+  const handleLoginSuccess = async (): Promise<void> => {
+    await window.electron.ipcRenderer.invoke('window:enter-main')
+    setIsAuthenticated(true)
+  }
+
+  if (!isAuthenticated) {
+    return <Login onLoginSuccess={handleLoginSuccess} />
+  }
+  console.log(window)
+  console.log(window.electron)
+  console.log(window.login)
   return (
     <>
       <img alt="logo" className="logo" src={electronLogo} />

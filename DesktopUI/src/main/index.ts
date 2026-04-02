@@ -2,18 +2,27 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { loginModule } from './login'
+const LOGIN_WINDOW = { width: 420, height: 450 }
+const MAIN_WINDOW = { width: 900, height: 670 }
 
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    width: LOGIN_WINDOW.width,
+    height: LOGIN_WINDOW.height,
+    minWidth: LOGIN_WINDOW.width,
+    minHeight: LOGIN_WINDOW.height,
+    maxWidth: LOGIN_WINDOW.width,
+    maxHeight: LOGIN_WINDOW.height,
+    resizable: false,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      contextIsolation: true
     }
   })
 
@@ -52,6 +61,16 @@ app.whenReady().then(() => {
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
 
+  ipcMain.handle('window:enter-main', (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender)
+    if (!win) return
+    win.setResizable(true)
+    win.setMinimumSize(400, 300)
+    win.setMaximumSize(0, 0)
+    win.setSize(MAIN_WINDOW.width, MAIN_WINDOW.height)
+    win.center()
+  })
+  loginModule()
   createWindow()
 
   app.on('activate', function () {

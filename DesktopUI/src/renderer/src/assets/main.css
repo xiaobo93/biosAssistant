@@ -34,6 +34,20 @@ code {
   margin-bottom: 80px;
 }
 
+body.login-mode {
+  justify-content: stretch;
+  align-items: stretch;
+}
+
+body.login-mode #root {
+  width: 100%;
+  min-height: 100vh;
+  margin-bottom: 0;
+  align-self: stretch;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
 .logo {
   margin-bottom: 20px;
   -webkit-user-drag: none;
