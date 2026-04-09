@@ -4,7 +4,6 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { loginModule } from './login'
 const LOGIN_WINDOW = { width: 420, height: 450 }
-const MAIN_WINDOW = { width: 900, height: 670 }
 
 function createWindow(): void {
   // Create the browser window.
