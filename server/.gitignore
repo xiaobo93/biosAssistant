@@ -1,0 +1,30 @@
+### Node
+node_modules/
+
+### Build output
+dist/
+*.tsbuildinfo
+
+### Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+### Environment
+.env
+.env.*
+
+### IDE
+.idea/
+.vscode/
+
+### OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+### pnpm (local store, if used)
+.pnpm-store/
+
