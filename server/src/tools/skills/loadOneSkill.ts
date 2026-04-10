@@ -57,4 +57,3 @@ export async function loadOneSkill(entry: SkillIndexEntry): Promise<LoadedSkill>
   const tools = await importScriptsTools(entry.dirAbs);
   return { entry, skillMd, tools };
 }
-

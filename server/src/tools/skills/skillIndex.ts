@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import fsSync from "node:fs";
 import path from "node:path";
-import { resolveSkillRoot } from "../config.js";
+import { resolveSkillRoot } from "../../config.js";
 import { parseSkillMd, pickSkillMeta } from "./parseSkillMd.js";
 import type { SkillIndexEntry } from "./types.js";
 
@@ -47,4 +47,3 @@ export async function buildSkillIndex(): Promise<SkillIndexEntry[]> {
   }
   return out;
 }
-

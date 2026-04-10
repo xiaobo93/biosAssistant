@@ -3,7 +3,7 @@ import { stdin, stdout } from "node:process";
 import { chatOnceWithTools } from "./chatClient.js";
 import type { AgentMessage } from "./agentTypes.js";
 import { buildToolRegistry } from "../tools/toolRegistry.js";
-import type { SkillIndexEntry } from "../skills/types.js";
+import type { SkillIndexEntry } from "../tools/skills/types.js";
 
 function buildSystemPrompt(skillIndex: SkillIndexEntry[]): string {
   const base =

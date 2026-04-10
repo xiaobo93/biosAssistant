@@ -1,7 +1,7 @@
 import { fsTools } from "./fs/fsSpecs.js";
-import type { RegisteredTool, SkillIndexEntry } from "../skills/types.js";
-import { buildSkillIndex } from "../skills/skillIndex.js";
-import { loadOneSkill } from "../skills/loadOneSkill.js";
+import type { RegisteredTool, SkillIndexEntry } from "./skills/types.js";
+import { buildSkillIndex } from "./skills/skillIndex.js";
+import { loadOneSkill } from "./skills/loadOneSkill.js";
 
 export type ToolRegistry = {
   /** 固定工具：内置 FS + loadSkill */
