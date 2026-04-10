@@ -3,8 +3,11 @@ import { inspect } from "node:util";
 import type { ChatCompletionMessageFunctionToolCall } from "openai/resources/chat/completions";
 import { config } from "../config.js";
 import type { AgentMessage, AssistantFunctionToolCall } from "./agentTypes.js";
-import { toolSpecs } from "./tools/fs/fsSpecs.js";
-import { runFsTool } from "./tools/toolRouter.js";
+import type { ToolRegistry } from "../tools/toolRegistry.js";
+import {
+  getAllRegisteredToolsFromRegistry,
+  runRegisteredTool,
+} from "../tools/toolRouter.js";
 
 function toStoredToolCalls(
   calls: ChatCompletionMessageFunctionToolCall[] | undefined
@@ -52,8 +55,9 @@ function toolResultToContent(value: unknown): string {
   return inspect(value, { depth: null, maxStringLength: null, breakLength: 120 });
 }
 
-export async function chatOnceWithTools(
-  messages: AgentMessage[]
+async function chatOnceWithToolsInternal(
+  messages: AgentMessage[],
+  registry: ToolRegistry
 ): Promise<{ messages: AgentMessage[]; replyText: string }> {
   const client = new OpenAI({
     apiKey: requireApiKey(),
@@ -67,7 +71,7 @@ export async function chatOnceWithTools(
     const resp = await client.chat.completions.create({
       model: config.openaiModel,
       messages: nextMessages as unknown as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
-      tools: toolSpecs as unknown as OpenAI.Chat.Completions.ChatCompletionTool[],
+      tools: registry.toolSpecs as unknown as OpenAI.Chat.Completions.ChatCompletionTool[],
       tool_choice: "auto",
     });
 
@@ -92,7 +96,8 @@ export async function chatOnceWithTools(
       const toolName = tc.function.name;
       const toolArgs = safeJsonParse<unknown>(tc.function.arguments || "{}");
       try {
-        const result = await runFsTool(toolName, toolArgs);
+        const allTools = getAllRegisteredToolsFromRegistry(registry);
+        const result = await runRegisteredTool(allTools, toolName, toolArgs);
         nextMessages.push({
           role: "tool",
           tool_call_id: tc.id,
@@ -113,4 +118,43 @@ export async function chatOnceWithTools(
   }
 
   return { messages: nextMessages, replyText: finalText };
+}
+
+function buildLoadedSkillSystemNote(registry: ToolRegistry): string | null {
+  if (registry.loadedSkillDocs.size === 0) return null;
+  const parts: string[] = [];
+  for (const [slug, md] of registry.loadedSkillDocs.entries()) {
+    parts.push(`【skill=${slug}】\n${md}`);
+  }
+  return (
+    "已按需加载以下 skill 的完整文档与 tools。请结合这些 skill 重新思考并回答用户上一条问题。\n\n" +
+    parts.join("\n\n---\n\n")
+  );
+}
+
+/**
+ * 两阶段按需加载：
+ * - 第 1 阶段：仅 FS + loadSkill
+ * - 若调用 loadSkill：加载文档+tools，注入 system，自动重试同一问题（第 2 阶段）
+ */
+export async function chatOnceWithTools(
+  messages: AgentMessage[],
+  registry: ToolRegistry
+): Promise<{ messages: AgentMessage[]; replyText: string }> {
+  // phase1
+  const phase1 = await chatOnceWithToolsInternal(messages, registry);
+  const didLoadSkill = phase1.messages.some(
+    (m) =>
+      m.role === "assistant" &&
+      Array.isArray(m.tool_calls) &&
+      m.tool_calls.some((c) => c.function.name === "loadSkill")
+  );
+  if (!didLoadSkill) return phase1;
+
+  const note = buildLoadedSkillSystemNote(registry);
+  const phase2Messages = note
+    ? ([...phase1.messages, { role: "system", content: note } as AgentMessage] as AgentMessage[])
+    : phase1.messages;
+
+  return await chatOnceWithToolsInternal(phase2Messages, registry);
 }
