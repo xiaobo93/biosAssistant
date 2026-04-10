@@ -1,15 +1,10 @@
-import { listFiles, readFile, writeFile } from "./fsTools.js";
+import { fsTools } from "./fs/fsSpecs.js";
 
-export async function callTool(name: string, args: unknown): Promise<unknown> {
-  switch (name) {
-    case "listFiles":
-      return await listFiles((args ?? {}) as Parameters<typeof listFiles>[0]);
-    case "readFile":
-      return await readFile((args ?? {}) as Parameters<typeof readFile>[0]);
-    case "writeFile":
-      return await writeFile((args ?? {}) as Parameters<typeof writeFile>[0]);
-    default:
-      throw new Error(`未知工具: ${name}`);
+/** 按名称在声明列表中命中后，直接调用对应 handle；后续可合并多组 fsTools / Skill / MCP 声明再查找 */
+export async function runFsTool(name: string, args: unknown): Promise<unknown> {
+  const entry = fsTools.find((t) => t.tool.function.name === name);
+  if (!entry) {
+    throw new Error(`未知工具: ${name}`);
   }
+  return entry.handle(args);
 }
-

@@ -3,8 +3,8 @@ import { inspect } from "node:util";
 import type { ChatCompletionMessageFunctionToolCall } from "openai/resources/chat/completions";
 import { config } from "../config.js";
 import type { AgentMessage, AssistantFunctionToolCall } from "./agentTypes.js";
-import { toolSpecs } from "./tools/toolSpecs.js";
-import { callTool } from "./tools/toolRouter.js";
+import { toolSpecs } from "./tools/fs/fsSpecs.js";
+import { runFsTool } from "./tools/toolRouter.js";
 
 function toStoredToolCalls(
   calls: ChatCompletionMessageFunctionToolCall[] | undefined
@@ -92,7 +92,7 @@ export async function chatOnceWithTools(
       const toolName = tc.function.name;
       const toolArgs = safeJsonParse<unknown>(tc.function.arguments || "{}");
       try {
-        const result = await callTool(toolName, toolArgs);
+        const result = await runFsTool(toolName, toolArgs);
         nextMessages.push({
           role: "tool",
           tool_call_id: tc.id,
