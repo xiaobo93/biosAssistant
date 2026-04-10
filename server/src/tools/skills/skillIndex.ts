@@ -3,8 +3,7 @@ import fsSync from "node:fs";
 import path from "node:path";
 import { resolveSkillRoot } from "../../config.js";
 import { parseSkillMd, pickSkillMeta } from "./parseSkillMd.js";
-import type { SkillIndexEntry } from "./types.js";
-
+import { SkillIndexEntry } from "../types.js";
 async function findSkillMdAbs(skillDirAbs: string): Promise<string | null> {
   for (const name of ["SKILL.md", "skill.md"]) {
     const p = path.join(skillDirAbs, name);

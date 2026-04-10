@@ -2,7 +2,8 @@ import fs from "node:fs/promises";
 import fsSync from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import type { RegisteredTool, SkillIndexEntry } from "./types.js";
+import type { RegisteredTool } from "../types.js";
+import type { SkillIndexEntry }  from "../types.js";
 
 function isRegisteredTool(x: unknown): x is RegisteredTool {
   if (!x || typeof x !== "object") return false;

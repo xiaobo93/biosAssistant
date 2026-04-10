@@ -3,7 +3,7 @@ import { inspect } from "node:util";
 import type { ChatCompletionMessageFunctionToolCall } from "openai/resources/chat/completions";
 import { config } from "../config.js";
 import type { AgentMessage, AssistantFunctionToolCall } from "./agentTypes.js";
-import type { ToolRegistry } from "../tools/toolRegistry.js";
+import { ToolRegistry } from "../tools/types.js";
 import {
   getAllRegisteredToolsFromRegistry,
   runRegisteredTool,

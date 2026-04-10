@@ -1,4 +1,4 @@
-import type { RegisteredTool } from "./skills/types.js";
+import type { RegisteredTool } from "./types.js";
 
 /** 在已注册工具列表中按名称调用 handle */
 export async function runRegisteredTool(
