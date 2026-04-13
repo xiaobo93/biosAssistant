@@ -9,7 +9,10 @@
     "start": "node dist/cli.js"
   },
   "dependencies": {
+    "callsites": "^4.2.0",
     "openai": "^6.34.0",
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0",
     "yaml": "^2.8.3"
   },
   "devDependencies": {

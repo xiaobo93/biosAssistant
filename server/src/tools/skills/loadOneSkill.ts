@@ -3,7 +3,8 @@ import fsSync from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import type { RegisteredTool } from "../types.js";
-import type { SkillIndexEntry }  from "../types.js";
+import type { SkillIndexEntry } from "../types.js";
+import { logger } from "../../log/logger.js";
 
 function isRegisteredTool(x: unknown): x is RegisteredTool {
   if (!x || typeof x !== "object") return false;
@@ -21,13 +22,13 @@ function isRegisteredTool(x: unknown): x is RegisteredTool {
 
 function validateTools(raw: unknown, source: string): RegisteredTool[] {
   if (!Array.isArray(raw)) {
-    console.warn(`[skill] ${source}: tools 不是数组，已忽略`);
+    logger.warn(`[skill] ${source}: tools 不是数组，已忽略`);
     return [];
   }
   const out: RegisteredTool[] = [];
   for (const item of raw) {
     if (isRegisteredTool(item)) out.push(item);
-    else console.warn(`[skill] ${source}: 跳过无效 tools 项`);
+    else logger.warn(`[skill] ${source}: 跳过无效 tools 项`);
   }
   return out;
 }

@@ -28,3 +28,4 @@ Desktop.ini
 ### pnpm (local store, if used)
 .pnpm-store/
 
+Logs/
