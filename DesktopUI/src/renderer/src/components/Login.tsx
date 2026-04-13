@@ -1,22 +1,17 @@
 import { type FormEvent, useState } from 'react'
 import '../assets/login.css'
 
-type LoginProps = {
-  onLoginSuccess: (LoginState:boolean) => void
-}
-
-export default function Login({ onLoginSuccess }: LoginProps): React.JSX.Element {
+export default function Login(): React.JSX.Element {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
-    const result =await window.login.verifyAccount(username, password)
+    const result = await window.login.verifyAccount(username, password)
     if (!result) {
-     setError('账号或密码错误')
-    }else{
-       onLoginSuccess(result)
+      alert('账号或密码错误')
+    } else {
+      alert('登录成功')
     }
   }
 
@@ -47,7 +42,6 @@ export default function Login({ onLoginSuccess }: LoginProps): React.JSX.Element
             onChange={(e) => setPassword(e.target.value)}
           />
         </label>
-        {error ? <p className="login-error">{error}</p> : null}
         <button className="login-submit" type="submit">
           登录
         </button>
