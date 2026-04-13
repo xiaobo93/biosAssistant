@@ -8,7 +8,7 @@ import {
   getAllRegisteredToolsFromRegistry,
   runRegisteredTool,
 } from "../tools/toolRouter.js";
-
+import { logger } from "../log/logger.js";
 function toStoredToolCalls(
   calls: ChatCompletionMessageFunctionToolCall[] | undefined
 ): AssistantFunctionToolCall[] | undefined {
@@ -85,7 +85,7 @@ async function chatOnceWithToolsInternal(
       tool_calls: toStoredToolCalls(functionCalls),
     };
     nextMessages.push(assistantMessage);
-
+    logger.info("Assistant message :",assistantMessage);
     const toolCalls = functionCalls;
     if (toolCalls.length === 0) {
       finalText = msg.content?.trim() || "(空回复)";
@@ -94,6 +94,7 @@ async function chatOnceWithToolsInternal(
 
     for (const tc of toolCalls) {
       const toolName = tc.function.name;
+      logger.info("Tool call :",toolName);
       const toolArgs = safeJsonParse<unknown>(tc.function.arguments || "{}");
       try {
         const allTools = getAllRegisteredToolsFromRegistry(registry);
@@ -110,6 +111,7 @@ async function chatOnceWithToolsInternal(
           content: e instanceof Error ? e.message : String(e),
         });
       }
+      logger.info("Tool result :",nextMessages[nextMessages.length - 1]);
     }
   }
 

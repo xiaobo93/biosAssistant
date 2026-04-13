@@ -1,5 +1,6 @@
 import { RegisteredTool,ToolRegistry } from "../types.js";
 import { loadOneSkill } from "./loadOneSkill.js";
+import { logger } from "../../log/logger.js";
 function toolName(t: RegisteredTool): string {
   return t.tool.function.name;
 }
@@ -37,7 +38,7 @@ export function makeLoadSkillTool(registry: ToolRegistry): RegisteredTool {
 
       const loaded = await loadOneSkill(entry);
       registry.loadedSkillDocs.set(slug, loaded.skillMd);
-
+      //logger.info("Skill information :",loaded);
       // 将 tools 合并到 loadedTools：后加载覆盖先加载（last-wins）
       const baseNames = new Set(registry.baseTools.map((t) => toolName(t)));
       for (const t of loaded.tools) {

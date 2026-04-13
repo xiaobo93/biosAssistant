@@ -4,6 +4,7 @@ import { chatOnceWithTools } from "./chatClient.js";
 import type { AgentMessage } from "./agentTypes.js";
 import { buildToolRegistry } from "../tools/toolRegistry.js";
 import { SkillIndexEntry } from "../tools/types.js";
+import { logger } from "../log/logger.js";
 
 function buildSystemPrompt(skillIndex: SkillIndexEntry[]): string {
   const base =
@@ -27,7 +28,8 @@ export async function runAgent(): Promise<void> {
       content: buildSystemPrompt(registry.skillIndex),
     },
   ];
-
+  logger.info("System prompt :",messages);
+  logger.info("Base tools :",registry.toolSpecs);
   stdout.write("biosAssistant CLI 已启动，输入 exit 退出。\n\n");
 
   try {
@@ -37,6 +39,7 @@ export async function runAgent(): Promise<void> {
       if (input.toLowerCase() === "exit" || input.toLowerCase() === "quit") break;
 
       messages.push({ role: "user", content: input });
+      logger.info("User input :",`{ role: "user", content: ${input} }`);
       try {
         const { messages: nextMessages, replyText } = await chatOnceWithTools(
           messages,
